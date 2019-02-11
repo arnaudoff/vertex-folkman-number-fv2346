@@ -4,6 +4,8 @@
 \usepackage{tabularx} % extra features for tabular environment
 \usepackage{amsmath}  % improve math presentation
 \usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{listings}
 \usepackage{graphicx} % takes care of graphic including machinery
 \usepackage[margin=1in,letterpaper]{geometry} % decreases margins
 \usepackage{cite} % takes care of citations
@@ -20,163 +22,117 @@
 }
 %++++++++++++++++++++++++++++++++++++++++
 
+\usepackage{amsthm}
+ 
+\theoremstyle{definition}
+\newtheorem{definition}{Дефиниция}[section]
 
 \begin{document}
 
 \title{Изчисляване на върховото Фолкманово число \\ F$_{\text{v}}$(2, 3, 4; 6)}
 \author{Ивайло Стефанов Арнаудов \\ \small{спец. Компютърни науки, 81638}}
-\date{25 януари 2019г.}
+\date{10 февруари 2019г.}
 \maketitle
 
+\newtheorem{theorem}{Твърдение}[section]
+\newtheorem{signify}{Означение}[section]
+
 \begin{abstract}
-Ще разгледаме алгоритмичен подход за решение на задача от дял на теорията на Ramsey, свързан с върховите Фолкманови числа, представен чрез доказателство с помощта на компютър.
+Ще разгледаме решение с помощта на компютър на задача от дял на теорията на Рамзи, свързан с върховите Фолкманови числа.
 \end{abstract}
 
+\section{Въведение}
 
-\section{Дефиниции}
+\subsection{Някои дефиниции и означения}
 
-Нека G е неориентиран граф с множество от върхове V(G) и множество от ребра E(G). Хроматичното число на G ще бележим с  $\chi(G)$, a числото на независимост с $\alpha(G)$. За всяко положително цяло число $a_i$, записваме $G \xrightarrow{\text{v}} (a_1,..., a_k)$ ако за всяко $k$-оцветяване на върховете на $G$, съществува едноцветен $K_{a_i}$ в някой цвят $i \in \{1, ..., k\}$.
+Нека G е неориентиран граф с множество от върхове V(G) и множество от ребра E(G). Хроматичното число на G ще бележим с  $\chi(G)$, a числото на независимост с $\alpha(G)$.
 
-Нека $H_v(a_1,..., a_k;p) = \{G : G \xrightarrow{\text{v}} (a_1, ..., a_k) \land K_p \nsubseteq G \}$. Графите, елементи на множеството $H_v(a_1,..., a_k;p)$ наричаме Фолкманови графи. С $H_v(a_1,..., a_k;p;n)$ означаваме Фолкмановите графи с $n$ върха. Фолкманов граф наричаме максимален когато добавянето на ребро създава $K_p$. Дефинираме върховите Фолкманови числа по следния начин
+\begin{definition}
 
-\begin{center}
-$F_v(a_1,...,a_k;p) = min \{|V(G)| : G \in H_v(a_1,...,a_k;p)\}$.
-\end{center}
+За дадени положителни цели числа $a_1$, $...$, $a_r$, записваме $G \xrightarrow{\text{v}} (a_1,..., a_r)$ ако за всяко $r$-оцветяване на върховете на $G$, съществува $i$, такова че има едноцветен $K_{a_i}$ в цвят $i$.
 
-Числото $R(p, q)$ наричаме число на Рамзи и дефинираме като най-малкото число n, такова че всички 2-оцветявания на ребрата на $K_n$ съдържат или едноцветен $K_p$ в първия цвят, или едноцветен $K_q$ във втория цвят. Графът $G$ наричаме (p,q)-Рамзи граф, ако $G$ не съдържа $K_p$ и $\alpha(G) < q$. Означаваме с $R(p,q;n)$ множеството на всички $(p,q)$-Рамзи графи с $n$ върха. Нека $m = 1 + \sum_{i=1}^{k} (a_i-1)$. Ще използваме наготово, че ако  $G \xrightarrow{\text{v}} (a_1,..., a_k)$ то $\chi(G) \geq m$.
+\end{definition}
 
-\section{Theory}
+\begin{definition}
+Нека $H_v(a_1,..., a_r;p) = \{G : G \xrightarrow{\text{v}} (a_1, ..., a_r) \land K_p \nsubseteq G \}$. Графите, елементи на множеството $H_v(a_1,..., a_r;p)$ наричаме Фолкманови графи. 
+\end{definition}
 
-Here give a brief summary of the physical effect of interest and provide
-necessary equations. Here is how you insert an equation. According to
-references~\cite{melissinos, Cyr, Wiki} the dependence of interest is given
-by
-\begin{equation} \label{eq:aperp} % the label is used to reference the equation
-u(\lambda,T)=\frac{8\pi hc\lambda^{-5}}{e^{hc/\lambda kT}-1},
-\end{equation}
-where T is temperature in Kelvin, c is the speed of light, etc. Don't forget to
-explain what each variable means the first time that you introduce it.
+\begin{definition} Числото $F_v(a_1,...,a_r;p) = min \{|V(G)| : G \in H_v(a_1,...,a_r;p)\}$ наричаме върхово Фолкманово число.
+\end{definition}
 
+\begin{definition}
+Числото на Рамзи $R(r, l)$ е най-малкото число $n$, такова, че всички 2-оцветявания на ребрата на $K_n$ съдържат или едноцветен $K_r$ в първия цвят или едноцветен $K_l$ във втория цвят.
+\end{definition}
 
-\section{Procedures}
+\begin{definition}
+Графът $G$ наричаме $(r, l)$-Рамзи граф, ако $G$ не съдържа $K_{r}$ и $\alpha(G) < l$.
+\end{definition}
 
-Give a schematic of the experimental setup(s) used in the experiment (see
-figure~\ref{fig:samplesetup}). Give the description of  abbreviations
-either in the figure caption or in the text. Write a description of what is
-going on. 
+\begin{signify}
+Означаваме с $R(r, l; n)$ множеството на всички $(r,l)$-Рамзи графи с $n$ върха.
+\end{signify}
 
-\begin{figure}[ht] 
-        % read manual to see what [ht] means and for other possible options
-        \centering \includegraphics[width=0.8\columnwidth]{sr_setup}
-        % note that in above figure file name, "sr_setup",
-        % the file extension is missing. LaTeX is smart enough to find
-        % apropriate one (i.e. pdf, png, etc.)
-        % You can add this extention yourself as it seen below
-        % both notations are correct but above has more flexibility
-        %\includegraphics[width=1.0\columnwidth]{sr_setup.pdf}
-        \caption{
-                \label{fig:samplesetup} % spaces are big no-no withing labels
-                % things like fig: are optional in the label but it helps
-                % to orient yourself when you have multiple figures,
-                % equations and tables
-                Every figure MUST have a caption.
-        }
-\end{figure}
+\begin{signify}
+Означаваме с $H_v(a_1,...,a_r;p;n)$ множеството на всички $n$-върхови Фолкманови графи.
+\end{signify}
 
-Don't forget to list all important steps in your experimental procedure!
+\subsection{Задание}
 
-Use active voice either in past or present through all the report and be
-consistent with it:
-The laser light comes  from to ... and eventually arrived to the
-balanced photodiode as seen in the figure~\ref{fig:samplesetup}.
+Да се докаже, че върховото Фолкманово число $F_v(2, 3, 4; 6) = 14$.
 
-Sentences in the past voice while correct are generally considered hard to read
-in large numbers. The laser light was directed to ..., wave plates were set
-to ... etc.
+\section{Решение}
 
+За да решим задачата, ще използваме инструмента nauty, който предоставя готов набор от програми, улесняващи процеса на работа с графи.
 
-\section{Analysis}
+\begin{enumerate}[Стъпка 1:]
+\item Генерираме всички 10 върхови графи, които нямат 6 клики, и изпълняват свойството $G \xrightarrow{\text{v}} (3, 4)$
 
-In this section you will need to show your experimental results. Use tables and
-graphs when it is possible. Table~\ref{tbl:bins} is an example.
+Това правим, използвайки стандартната команда $geng$ в nauty, която генерира всички $n$ върхови графи. В допълнение, ще използваме инструментите $filter$ и $fv$, предоставени в материалите за курса, където $filter$ приема предикат и филтрира списък от графи спрямо дадения предикат, a $fv$ приема $r$ на брой аргумента и проверява дали $G \xrightarrow{\text{v}} (a_1, ..., a_r)$ за даден граф $G$. Всички такива графи записваме в файла $10.g6$.
 
-\begin{table}[ht]
-\begin{center}
-\caption{Every table needs a caption.}
-\label{tbl:bins} % spaces are big no-no withing labels
-\begin{tabular}{|cc|} 
-\hline
-\multicolumn{1}{|c}{$x$ (m)} & \multicolumn{1}{c|}{$V$ (V)} \\
-\hline
-0.0044151 &   0.0030871 \\
-0.0021633 &   0.0021343 \\
-0.0003600 &   0.0018642 \\
-0.0023831 &   0.0013287 \\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
+\begin{lstlisting}[language=bash]
+$ nauty-geng 10 | ./filter -w\< 6 | ./fv 3 4 > 10.g6
+\end{lstlisting}
 
-Analysis of equation~\ref{eq:aperp} shows ...
+Графът, който получаваме е един, и изглежда така:
 
-Note: this section can be integrated with the previous one as long as you
-address the issue. Here explain how you determine uncertainties for different
-measured values. Suppose that in the experiment you make a series of
-measurements of a resistance of the wire $R$ for different applied voltages
-$V$, then you calculate the temperature from the resistance using a known
-equation and make a plot  temperature vs. voltage squared. Again suppose that
-this dependence is expected to be linear~\cite{Cyr}, and the proportionality coefficient
-is extracted from the graph. Then what you need to explain is that for the
-resistance and the voltage the uncertainties are instrumental (since each
-measurements in done only once), and they are $\dots$. Then give an equation
-for calculating the uncertainty of the temperature from the resistance
-uncertainty. Finally explain how the uncertainty of the slop of the graph was
-found (computer fitting, graphical method, \emph{etc}.)
+\includegraphics[scale=0.45]{10.png}
 
-If in the process of data analysis you found any noticeable systematic
-error(s), you have to explain them in this section of the report.
+\item Добавяме независимо множество от 3 върха, разширявайки графа до 13 върхов граф, базирайки се на $extend$ алгоритъма: тоест, при параметри $extend$ $q$ $r$, намираме всички максимални $K_{q-1}$ свободни множества и построяваме всевъзможните графи, използвайки тези множества и добавените независими $r$ върха (в случая, търсим $K_5$-свободни множества и добавяме 3 върха) . Като резултат от $extend$ алгоритъма, получаваме максималните 13 върхови графи. Накрая премахваме изоморфните графи чрез $shortg$ и разглеждаме само тези, които имат свойството $G\xrightarrow{\text{v}} (2, 3, 4)$
 
-It is also recommended to plot the data graphically to efficiently illustrate
-any points of discussion. For example, it is easy to conclude that the
-experiment and theory match each other rather well if you look at
-Fig.~\ref{fig:samplesetup} and Fig.~\ref{fig:exp_plots}.
+\begin{lstlisting}[language=bash]
+$ cat 10.g6 | ./extend 6 3 | nauty-shortg | ./fv 2 3 4
+\end{lstlisting}
 
-\begin{figure}[ht] 
-  \centering
-      \includegraphics[width=0.5\columnwidth]{sr_squeezing_vs_detuning}
+\item Понеже броя на резултантните графи е нула, то следва, че няма графи в множеството $H_v(2, 3, 4; 6; 13)$, които имат независимо множество от 3 върха. Остава да проверим, че и графите които не съдържат независимо множество от 3 върха не принадлежат на това множество. Това може да стане посредством графите-допълнениe на (3,6)-Рамзи графите (които имаме изчислени предварително от \cite{mckay}), които са графи, несъдържащи независимо множество с 3 върха и 6-клика.
 
-% some figures do not need to be too wide
-        \caption{
-                \label{fig:exp_plots}  
-                Every plot must have axes labeled.
-        }
-\end{figure}
+\begin{lstlisting}[language=bash]
+cat r36_13.g6 | ./complement | ./fv 2 3 4
+\end{lstlisting}
 
+Така заключaваме, че  $F_v(2,3,4;6)\geq14$.
 
-\section{Conclusions}
-Here you briefly summarize your findings.
+\item Остава да докажем, че $F_v(2,3,4;6)\leq14$. В \cite{nenovnedialkov} е даден пример за такъв граф, който дава оценката отгоре. Може да докажем твърдението и с помощта на изчисления, използвайки отново (3,6)-Рамзи графите:
 
-%++++++++++++++++++++++++++++++++++++++++
-% References section will be created automatically 
-% with inclusion of "thebibliography" environment
-% as it shown below. See text starting with line
-% \begin{thebibliography}{99}
-% Note: with this approach it is YOUR responsibility to put them in order
-% of appearance.
+\begin{lstlisting}[language=bash]
+cat r36_14.g6| ./complement | ./fv 2 3 4
+\end{lstlisting}
 
+Получаваме следните два графа (които нямат независимо множество с 3 върха и нямат 6-клика):
+
+\includegraphics[scale=0.25]{first14vertex.png}
+
+\includegraphics[scale=0.25]{second14vertex.png}
+
+Така доказахме, че $F_v(2,3,4;6)=14$.
+
+\end{enumerate}
+ 
 \begin{thebibliography}{99}
 
-\bibitem{melissinos}
-A.~C. Melissinos and J. Napolitano, \textit{Experiments in Modern Physics},
-(Academic Press, New York, 2003).
+\bibitem{mckay} https://users.cecs.anu.edu.au/~bdm/data/ramsey.html
 
-\bibitem{Cyr}
-N.\ Cyr, M.\ T$\hat{e}$tu, and M.\ Breton,
-% "All-optical microwave frequency standard: a proposal,"
-IEEE Trans.\ Instrum.\ Meas.\ \textbf{42}, 640 (1993).
-
-\bibitem{Wiki} \emph{Expected value},  available at
-\texttt{http://en.wikipedia.org/wiki/Expected\_value}.
+\bibitem{nenovnedialkov}
+Nedyalkov, Evgeni & Nenov, Nedyalko. (2002). Computation of the Vertex Folkman Numbers F(2, 2, 2, 4;6) and F(2, 3, 4;6).. Electr. J. Comb.. 9. 
 
 \end{thebibliography}
 
